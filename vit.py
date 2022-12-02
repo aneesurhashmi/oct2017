@@ -122,7 +122,8 @@ if train_model == True:
     print("Using: ", device)
     
     # tensorboard 
-    writer = SummaryWriter(f'cnn-{EPOCHS}')
+    # writer = SummaryWriter(f'./runs/vit-{EPOCHS}')
+    writer = SummaryWriter(f'./runs/d{DEPTH}/vit-{EPOCHS}')
 
     optimizer = optim.Adam(model.parameters(), lr=LR)
     train_loss_history, val_loss_history = [], []
@@ -133,6 +134,7 @@ if train_model == True:
     writer.flush()
     print('Execution time:', '{:5.2f}'.format(time.time() - start_time), 'seconds')
     torch.save(model, f'./models/d{DEPTH}/vit-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}.pth')
+    
 elif test_model == True:
     print("Starting test.. ")
     MODEL_NAME = f"vit-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}" 
@@ -140,3 +142,4 @@ elif test_model == True:
     model = torch.load(f"./models/d{DEPTH}/{MODEL_NAME}.pth")
     model = model.to(device)
     evaluate(model, test_loader, model_name=MODEL_NAME, device=device)
+    

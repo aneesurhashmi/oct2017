@@ -13,7 +13,8 @@ from utils import train_epoch, evaluate
 from dataset import get_dataloaders
 from pretrainedmodels import xception
 import timm
-# usage: python oct.py --mode train --epochs 50 --batch_size 1000 --image_size 150 --patch_size 25 --heads 12 -lr 0.0003 --depth 12
+
+# usage: python xception.py --mode train --epochs 50 --batch_size 1000  -lr 0.0003 
 
 train_model = False
 test_model = True
@@ -91,30 +92,29 @@ if train_model == True:
     # ).to(device)
     model = model.to(device)
     # print(model)
-    print("Using: ", device)
-    for param in model.parameters():
-        if param.requires_grad ==True:
-            print("Grad True")      
+    # print("Using: ", device)
+    # for param in model.parameters():
+    #     if param.requires_grad ==True:
+    #         print("Grad True")      
     
+    # print(model)
+
     # tensorboard 
     if train_model == True:
-        writer = SummaryWriter(f'xception-{EPOCHS}')
+        writer = SummaryWriter(f'./runs/xception-{EPOCHS}')
 
-    # criterion = nn.CrossEntropyLoss()
-    # optimizer = optim.Adam(model.parameters(), lr=LR)
-    # train_loss_history, val_loss_history = [], []
-    # for epoch in range(1, EPOCHS + 1):
-    #     print('Epoch:', epoch)
-    #     train_epoch(model, optimizer, train_loader, train_loss_history, epoch, device, criterion=criterion, writer=writer)
-    #     evaluate(model, val_loader, val_loss_history, device=device, criterion=criterion)
-    # writer.flush()
-    # print('Execution time:', '{:5.2f}'.format(time.time() - start_time), 'seconds')
-    # torch.save(model, f'./models/xception-{EPOCHS}.pth')
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=LR)
+    train_loss_history, val_loss_history = [], []
+    for epoch in range(1, EPOCHS + 1):
+        print('Epoch:', epoch)
+        train_epoch(model, optimizer, train_loader, train_loss_history, epoch, device, criterion=criterion, writer=writer)
+        evaluate(model, val_loader, val_loss_history, device=device, criterion=criterion)
+    writer.flush()
+    print('Execution time:', '{:5.2f}'.format(time.time() - start_time), 'seconds')
+    torch.save(model, f'./models/xception-{EPOCHS}.pth')
 elif test_model == True:
     print("test")
-    # model = ViT(image_size=IMAGE_SIZE, patch_size=PATCH_SIZE, num_classes=4, channels=3,
-    #             dim=64, depth=DEPTH, heads=8, mlp_dim=128)
-    # print(f'./saved_models/vit-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}.pth')
     MODEL_NAME = f"xception-{EPOCHS}" 
     device = torch.device("cuda" if torch.cuda.is_available else "cpu")
     criterion = nn.CrossEntropyLoss()
