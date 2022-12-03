@@ -41,55 +41,31 @@ DEPTH = 8
 def parse_args():
     parser = argparse.ArgumentParser(description="VIT for OCT2017",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-m", "--mode", help=f"test or train mode - Default = test")
-    parser.add_argument("-e", "--epochs", type=int, help=f"Number of epochs - Default = {EPOCHS}")
-    parser.add_argument("-b", "--batch_size", type=int, help=f"Batch size - Default  = {BATCH_SIZE}")
-    parser.add_argument("-im", "--image_size", type=int, help=f"Shape of input image - Default = {IMAGE_SIZE}")
-    parser.add_argument("-pch", "--patch_size", type=int, help=f"Patch size for vit - Default = {PATCH_SIZE}")
-    parser.add_argument("-hd", "--heads",  type=int, help=f"Number of attention heads per block- Default {ATT_HEADS}")
-    parser.add_argument("-lr", "--learning_rate",type=float, help=f"Learning rate - Default {LR}")
-    parser.add_argument("-d", "--depth", type=int, help=f"Number of transformer block- Default {DEPTH}")
+    parser.add_argument("-m", "--mode", help=f"test or train mode - Default = test", default="test")
+    parser.add_argument("-e", "--epochs", type=int, help=f"Number of epochs - Default = {EPOCHS}", default=EPOCHS)
+    parser.add_argument("-b", "--batch_size", type=int, help=f"Batch size - Default  = {BATCH_SIZE}", default=BATCH_SIZE)
+    parser.add_argument("-im", "--image_size", type=int, help=f"Shape of input image - Default = {IMAGE_SIZE}", default=IMAGE_SIZE)
+    parser.add_argument("-pch", "--patch_size", type=int, help=f"Patch size for vit - Default = {PATCH_SIZE}", default=PATCH_SIZE)
+    parser.add_argument("-hd", "--heads",  type=int, help=f"Number of attention heads per block- Default {ATT_HEADS}", default=ATT_HEADS)
+    parser.add_argument("-lr", "--learning_rate",type=float, help=f"Learning rate - Default {LR}", default=LR)
+    parser.add_argument("-d", "--depth", type=int, help=f"Number of transformer block- Default {DEPTH}", default=DEPTH)
     args = parser.parse_args()
     config = vars(args)
     return config
             
 
 args = parse_args()
-try:
-    MODE = args["mode"] or args["m"]
-    train_model = True if MODE == "train" else False
-    test_model = False if MODE == "train" else True
-except:
-    pass
-# MODE = args["mode"] or args["m"] or "test"
-try:
-    EPOCHS = args["epochs"] or args["e"]
-except:
-    pass
-try:
-    BATCH_SIZE = args["batch_size"] or args["b"] 
-except:
-    pass
-try:
-    IMAGE_SIZE = args["image_size"] or args["im"]
-except:
-    pass
-try:
-    PATCH_SIZE = args["patch_size"] or args["pch"]
-except:
-    pass
-try:
-    ATT_HEADS = args["heads"] or args["h"]
-except:
-    pass
-try:
-    DEPTH = args["depth"] or args["d"]
-except:
-    pass
-try:
-    LR = args["learning_rate"] or args["lr"]
-except:
-    pass
+MODE = args["mode"] or args["m"]
+train_model = True if MODE == "train" else False
+test_model = False if MODE == "train" else True
+EPOCHS = args["epochs"] or args["e"]
+BATCH_SIZE = args["batch_size"] or args["b"] 
+IMAGE_SIZE = args["image_size"] or args["im"]
+PATCH_SIZE = args["patch_size"] or args["pch"]
+ATT_HEADS = args["heads"] or args["h"]
+DEPTH = args["depth"] or args["d"]
+LR = args["learning_rate"] or args["lr"]
+
 
 use_gpu = torch.cuda.is_available()
 if use_gpu:
