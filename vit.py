@@ -84,10 +84,14 @@ val_loader, test_loader, train_loader = loaders["val_loader"], loaders["test_loa
 # assert len(val_loader) == 32
 
 
+
+
 # ======================================== #
 # ======================================== #
 # ============== TRAINING ================ #
 # ======================================== #
+
+model_name= f'vit-d{DEPTH}-h{ATT_HEADS}-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}'
 
 if train_model == True:
     start_time = time.time()
@@ -99,23 +103,33 @@ if train_model == True:
     
     # tensorboard 
     # writer = SummaryWriter(f'./runs/vit-{EPOCHS}')
-    writer = SummaryWriter(f'./runs/d{DEPTH}/vit-{EPOCHS}')
+    writer = SummaryWriter(f'./runs/d{DEPTH}/{model_name}')
 
     optimizer = optim.Adam(model.parameters(), lr=LR)
     train_loss_history, val_loss_history = [], []
     for epoch in range(1, EPOCHS + 1):
         print('Epoch:', epoch)
         train_epoch(model, optimizer, train_loader, train_loss_history, epoch, device, writer=writer)
-        evaluate(model, val_loader, val_loss_history, device=device)
+        evaluate(model, val_loader, val_loss_history, device=device, writer=writer, ep = epoch)
     writer.flush()
     print('Execution time:', '{:5.2f}'.format(time.time() - start_time), 'seconds')
-    torch.save(model, f'./models/d{DEPTH}/vit-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}.pth')
+    
+    # torch.save(model, f'./models/d{DEPTH}/vit-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}.pth')
+    torch.save(model, f'./models/d{DEPTH}/{model_name}.pth')
     
 elif test_model == True:
     print("Starting test.. ")
-    MODEL_NAME = f"vit-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}" 
+    # MODEL_NAME = f"vit-{PATCH_SIZE}x{IMAGE_SIZE}-{EPOCHS}" 
+    
+    # if ATT_HEADS ==8:
     device = torch.device("cuda" if torch.cuda.is_available else "cpu")
-    model = torch.load(f"./models/d{DEPTH}/{MODEL_NAME}.pth")
+    # model = torch.load(f"./models/d{DEPTH}/{MODEL_NAME}.pth")
+    model = torch.load(f"./models/d{DEPTH}/{model_name}.pth")
     model = model.to(device)
-    evaluate(model, test_loader, model_name=MODEL_NAME, device=device)
+    # else:
+    #     device = torch.device("cuda" if torch.cuda.is_available else "cpu")
+    #     model = torch.load(f"./models/d{DEPTH}/{MODEL_NAME}.pth")
+    #     model = model.to(device)
+
+    evaluate(model, test_loader, model_name=model_name, device=device)
     

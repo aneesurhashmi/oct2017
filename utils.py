@@ -1,17 +1,16 @@
-
 from __future__ import print_function, division
-
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, f1_score, classification_report, precision_recall_fscore_support
+from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
 import seaborn as sn
 import pandas as pd
 import os
-from torchsummary import summary
+from typing import Iterable
+import torch
+from torch.optim._multi_tensor import SGD
 
-# import torch.utils.tensorboard
 def train_epoch(model, optimizer, data_loader, loss_history, ep, device, criterion=None, writer=None):
     total_samples = len(data_loader.dataset)
     model.train()
@@ -37,6 +36,7 @@ def train_epoch(model, optimizer, data_loader, loss_history, ep, device, criteri
                 # loss_history.append(loss.item())
         if writer:
             writer.add_scalar("Train Loss", loss.item(), ep)
+            # writer.add_scalar("Eval Loss", loss.item(), ep)
         # average loss per epoch
         avg_loss = total_loss / total_samples
         loss_history.append(avg_loss)
@@ -126,7 +126,7 @@ def save_test_results(results, results_file_path = results_file_path):
         df.to_csv(results_file_path, index=False)
 
 
-def evaluate(model, data_loader, loss_history="na", criterion=None, device = None, model_name="na"):
+def evaluate(model, data_loader, loss_history="na", criterion=None, device = None, model_name="na", writer = None, ep=None):
     model.eval()
     total_samples = len(data_loader.dataset)
     correct_samples = 0
@@ -191,10 +191,12 @@ def evaluate(model, data_loader, loss_history="na", criterion=None, device = Non
     # eval mode
     else:
         loss_history.append(avg_loss)
-        print('\nAverage tFest loss: ' + '{:.4f}'.format(avg_loss) +
+        print('\nAverage val loss: ' + '{:.4f}'.format(avg_loss) +
             '  Accuracy:' + '{:5}'.format(correct_samples) + '/' +
             '{:5}'.format(total_samples) + ' (' +
             '{:4.2f}'.format(100.0 * correct_samples / total_samples) + '%)\n')
+        if writer:
+            writer.add_scalar("Eval ", avg_loss, ep)
 
 
 
@@ -205,11 +207,6 @@ def evaluate(model, data_loader, loss_history="na", criterion=None, device = Non
 # =================================================================================================================================  #
 # =================================================================================================================================  #
 
-
-from typing import Iterable
-
-import torch
-from torch.optim._multi_tensor import SGD
 
 __all__ = ["SAMSGD"]
 

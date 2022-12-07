@@ -12,12 +12,10 @@ import argparse
 from utils import train_epoch, evaluate
 from dataset import get_dataloaders
 
-# usage: python oct.py --mode train --epochs 50 --batch_size 1000 --image_size 150 --patch_size 25 --heads 12 -lr 0.0003 --depth 12
+# usage: python mobilenet_v2.py --mode train --epochs 50 --batch_size 1000 -lr 0.0003 
 
 train_model = False
 test_model = True
-# IMAGE_SIZE = 150
-# PATCH_SIZE = 25
 EPOCHS = 30
 BATCH_SIZE = 2000
 LR = 0.0003
@@ -52,11 +50,6 @@ torch.manual_seed(42)
 loaders = get_dataloaders(BATCH_SIZE = BATCH_SIZE)
 val_loader, test_loader, train_loader = loaders["val_loader"], loaders["test_loader"], loaders["train_loader"]
 
-# assert len(train_loader) == 83452
-# assert len(test_loader) == 1000
-# assert len(val_loader) == 32
-
-
 # ======================================== #
 # ======================================== #
 # ============== TRAINING ================ #
@@ -78,7 +71,7 @@ if train_model == True:
    
     print("Using: ", device)
     # tensorboard 
-    writer = SummaryWriter(f'mobilenetv2-{EPOCHS}')
+    writer = SummaryWriter(f'./runs/mobilenetv2-{EPOCHS}')
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LR)

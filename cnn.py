@@ -10,7 +10,7 @@ import argparse
 from utils import train_epoch, evaluate
 from dataset import get_dataloaders
 
-# usage: python cnn.py --mode train --epochs 50 --batch_size 1000 --image_size 150 --patch_size 25 --heads 12 -lr 0.0003 --depth 12
+# usage: python cnn.py --mode train --epochs 50 --batch_size 1000  -lr 0.0003
 
 train_model = False
 test_model = True
@@ -48,13 +48,6 @@ torch.manual_seed(42)
 loaders = get_dataloaders(BATCH_SIZE = BATCH_SIZE)
 val_loader, test_loader, train_loader = loaders["val_loader"], loaders["test_loader"], loaders["train_loader"]
 
-# print(len(train_loader))
-# print(len(test_loader))
-# print(len(val_loader))
-
-# assert len(train_loader) == "83452"
-# assert len(test_loader) == 1000
-# assert len(val_loader) == 32
 
 class CNN (nn.Module):
     def __init__(self):
@@ -101,7 +94,7 @@ if train_model == True:
     model = CNN().to(device)
     print("Using: ", device)
     # tensorboard 
-    writer = SummaryWriter(f'cnn-{EPOCHS}')
+    writer = SummaryWriter(f'./runs/cnn-{EPOCHS}')
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LR)
@@ -113,6 +106,7 @@ if train_model == True:
     writer.flush()
     print('Execution time:', '{:5.2f}'.format(time.time() - start_time), 'seconds')
     torch.save(model, f'./models/cnn-{EPOCHS}.pth')
+    
 elif test_model == True:
     print("Starting test")
     device = torch.device("cuda" if torch.cuda.is_available else "cpu")
